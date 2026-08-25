@@ -65,19 +65,19 @@ def main() -> None:
 
     try:
         _update(task_ref, status="running", started_at=firestore.SERVER_TIMESTAMP)
-        _notify(requester, f"🚀 Starting: {prompt[:200]}")
+        _notify(requester, f"Starting.")
 
         github_token = _github_installation_token()
         repo_name, repo_url = _resolve_repo(prompt, github_token)
         _update(task_ref, repo=repo_url)
-        _notify(requester, f"📦 Using repo {repo_url}")
+        _notify(requester, f"Using repo {repo_url}.")
 
         with tempfile.TemporaryDirectory() as workdir:
             repo_dir = _clone(repo_url, github_token, workdir)
             branch = f"agent/{TASK_ID[:8]}"
             _run(["git", "checkout", "-b", branch], cwd=repo_dir)
 
-            _notify(requester, "🤖 Claude Code is working on it...")
+            _notify(requester, "Working on it.")
             _run_claude_code(prompt, repo_dir)
 
             if not _has_changes(repo_dir):
@@ -95,7 +95,7 @@ def main() -> None:
 
             pr_url = _open_pr(repo_dir, branch, prompt, github_token)
             _update(task_ref, status="done", pr_url=pr_url, finished_at=firestore.SERVER_TIMESTAMP)
-            _notify(requester, f"✅ Done! Pull request: {pr_url}")
+            _notify(requester, f"Done. {pr_url}")
 
     except Exception as exc:  # noqa: BLE001
         log.exception("task %s failed", TASK_ID)
