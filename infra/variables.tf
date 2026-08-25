@@ -14,25 +14,31 @@ variable "receiver_image" {
   type        = string
 }
 
-variable "agent_job_image" {
+variable "agent_image" {
   description = "Image for the agent Cloud Run Job"
   type        = string
 }
 
-variable "agent_job_timeout_seconds" {
+variable "agent_timeout_seconds" {
   description = "Max time an agent run is allowed"
   type        = number
   default     = 300 # 5 minutes
 }
 
-variable "agent_job_cpu" {
+
+variable "agent_cpu" {
   type    = string
   default = "2"
 }
 
-variable "agent_job_memory" {
+variable "agent_memory" {
   type    = string
   default = "2Gi"
+}
+
+variable "max_claude_turns" {
+  type    = number
+  default = 30
 }
 
 # Secrets

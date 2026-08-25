@@ -34,7 +34,7 @@ resource "google_project_service" "apis" {
 
 resource "google_artifact_registry_repository" "images" {
   location      = var.region
-  repository_id = "whatsapp-agent"
+  repository_id = "whatcode"
   format        = "DOCKER"
   depends_on    = [google_project_service.apis]
 }

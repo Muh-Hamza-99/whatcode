@@ -1,7 +1,8 @@
 resource "google_cloud_run_v2_service" "receiver" {
-  name     = "whatsapp-agent-receiver"
+  name     = "whatcode-receiver"
   location = var.region
   ingress  = "INGRESS_TRAFFIC_ALL" # must stay public - Twilio calls this directly
+  deletion_protection = false
 
   template {
     service_account = google_service_account.receiver.email
@@ -22,8 +23,8 @@ resource "google_cloud_run_v2_service" "receiver" {
         value = google_cloud_tasks_queue.agent_tasks.name
       }
       env {
-        name  = "AGENT_JOB_NAME"
-        value = google_cloud_run_v2_job.agent_job.name
+        name  = "AGENT_NAME"
+        value = google_cloud_run_v2_job.agent.name
       }
       env {
         name  = "TASKS_INVOKER_SA"

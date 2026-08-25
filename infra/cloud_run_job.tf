@@ -1,15 +1,16 @@
-resource "google_cloud_run_v2_job" "agent_job" {
-  name     = "whatsapp-agent-job"
+resource "google_cloud_run_v2_job" "agent" {
+  name     = "whatcode-job"
   location = var.region
+  deletion_protection = false
 
   template {
     template {
-      service_account = google_service_account.agent_job.email
-      timeout         = "${var.agent_job_timeout_seconds}s"
+      service_account = google_service_account.agent.email
+      timeout         = "${var.agent_timeout_seconds}s"
       max_retries     = 0 # let failures surface as a WhatsApp message, not a silent retry
 
       containers {
-        image = var.agent_job_image
+        image = var.agent_image
 
         # TASK_ID is overridden per-execution by the receiver when it calls
         # jobs.run() - this default is only used for manual `gcloud run jobs execute`.
@@ -20,6 +21,10 @@ resource "google_cloud_run_v2_job" "agent_job" {
         env {
           name  = "GCP_PROJECT"
           value = var.project_id
+        }
+        env {
+          name  = "MAX_CLAUDE_TURNS"
+          value = tostring(var.max_claude_turns)
         }
         env {
           name = "TWILIO_ACCOUNT_SID"
@@ -82,8 +87,8 @@ resource "google_cloud_run_v2_job" "agent_job" {
 
         resources {
           limits = {
-            cpu    = var.agent_job_cpu
-            memory = var.agent_job_memory
+            cpu    = var.agent_cpu
+            memory = var.agent_memory
           }
         }
       }

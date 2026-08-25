@@ -5,7 +5,7 @@ resource "google_service_account" "receiver" {
 }
 
 # Agent Cloud Run Job
-resource "google_service_account" "agent_job" {
+resource "google_service_account" "agent" {
   account_id   = "whatcode-job"
   display_name = "Whatcode - coding job"
 }
@@ -46,7 +46,7 @@ resource "google_project_iam_member" "receiver_run_developer" {
 # Used by receiver needs to generate/verify OIDC tokens for Cloud Tasks
 resource "google_service_account_iam_member" "receiver_can_act_as_tasks_invoker" {
   service_account_id = google_service_account.tasks_invoker.name
-  role                = "roles/iam.serviceAccountTokenCreator"
+  role                = "roles/iam.serviceAccountUser"
   member              = "serviceAccount:${google_service_account.receiver.email}"
 }
 
@@ -61,15 +61,15 @@ resource "google_cloud_run_v2_service_iam_member" "tasks_can_invoke_receiver" {
 }
 
 # Agent job needs its own secrets and Firestore access
-resource "google_secret_manager_secret_iam_member" "agent_job_secrets" {
+resource "google_secret_manager_secret_iam_member" "agent_secrets" {
   for_each  = local.secrets
   secret_id = google_secret_manager_secret.secret[each.key].id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.agent_job.email}"
+  member    = "serviceAccount:${google_service_account.agent.email}"
 }
 
-resource "google_project_iam_member" "agent_job_firestore" {
+resource "google_project_iam_member" "agent_firestore" {
   project = var.project_id
   role    = "roles/datastore.user"
-  member  = "serviceAccount:${google_service_account.agent_job.email}"
+  member  = "serviceAccount:${google_service_account.agent.email}"
 }

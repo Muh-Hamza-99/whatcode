@@ -3,8 +3,8 @@ output "receiver_url" {
   value       = google_cloud_run_v2_service.receiver.uri
 }
 
-output "agent_job_name" {
-  value = google_cloud_run_v2_job.agent_job.name
+output "agent_name" {
+  value = google_cloud_run_v2_job.agent.name
 }
 
 output "tasks_queue_id" {
