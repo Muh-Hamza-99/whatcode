@@ -136,6 +136,7 @@ async def run_job(request: Request):
         ),
     )
     job_client.run_job(request=request_obj)
+    db.collection("tasks").document(task_id).update({"status": "starting"})
     log.info("started agent job execution for task %s", task_id)
     return {"status": "started", "task_id": task_id}
 
